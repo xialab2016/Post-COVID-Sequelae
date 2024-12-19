@@ -9,7 +9,7 @@ library(RColorBrewer)
 library(ggplot2)
 library(VennDiagram)
 library(multcomp)
-DATA=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/pasc_rawintegrated_03022023.csv")
+DATA=read.csv("pasc_rawintegrated_03022023.csv")
 length(unique(DATA$id_participant)); dim(DATA) ##2156
 
 #### demographics ####
@@ -34,7 +34,7 @@ demo<-demo %>% mutate(CCI=cci___1+cci___2+cci___3+cci___4+cci___5+cci___6+cci___
 table(demo$CCI,useNA = "ifany")
 table(demo$CCI_cata,useNA = "ifany")
 demo=demo %>% dplyr::select(id_participant,age_survey,sex, race_eth, bmi, bmi_cata, CCI,CCI_cata)
-write.csv(demo, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/demographics.csv",row.names = F)
+write.csv(demo, "demographics.csv",row.names = F)
 #### vaccine ####
 vac=DATA[,c(2,35:46)]
 table(vac$vaccine,vac$vaccine_doses,useNA = "ifany")
@@ -50,7 +50,7 @@ long2=data.frame(id_participant=id_unknown,vaccine=NA, vaccine_doses=NA,dose=NA,
 long3=data.frame(id_participant=id_nonevac,vaccine=0, vaccine_doses=0,dose=NA, vac_date=NA)
 vacnew=rbind(long,long2,long3)
 vacnew=vacnew %>% arrange(id_participant) 
-write.csv(vacnew, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/vaccine.csv",row.names = F)
+write.csv(vacnew, "vaccine.csv",row.names = F)
 
 #### COVID infection ####
 id_unknown=DATA$id_participant[which(DATA$covid==101 | is.na(DATA$covid)==T)] ##117 unknown infection status
@@ -127,7 +127,7 @@ length(unique(infect_sev_long_new$id_participant))
 infect=infect_date_long_new %>% left_join(infect_sev_long_new, by=c("id_participant","covid","covid_number","covid_n")) %>%
   left_join(infect_diag_all, by=c("id_participant","covid","covid_number","covid_n"))
 infect$covid_date=as.Date(infect$covid_date,"%m/%d/%y")
-write.csv(infect, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/covid.csv",row.names = F)
+write.csv(infect, "covid.csv",row.names = F)
 latest=infect %>% group_by(id_participant) %>% mutate(covid_date_latest=max(as.Date(covid_date),na.rm = T))
 latest$covid_date_latest[which(latest$covid_date_latest==-Inf)]=NA
 latest=latest %>% filter(covid_date==covid_date_latest | is.na(covid_date_latest)==T)
@@ -141,8 +141,8 @@ initial$covid_date_initial[which(initial$covid_date_initial==Inf)]=NA
 initial=initial %>% filter(covid_date==covid_date_initial | is.na(covid_date_initial)==T)
 initial=initial %>% group_by(id_participant) %>% arrange(covid_n) %>% filter(row_number()==n())
 initial<- initial %>% mutate( covid_wave=ifelse(covid_date_initial<"2022-01-01","Before Jan 1, 2022","After Jan 1, 2022")) 
-write.csv(latest, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/covid_latest.csv",row.names = F)
-write.csv(initial, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/covid_initial.csv",row.names = F)
+write.csv(latest, "covid_latest.csv",row.names = F)
+write.csv(initial, "covid_initial.csv",row.names = F)
 
 ### MS and related ####
 ms=DATA[,c(2,143:147,160)]
@@ -160,15 +160,15 @@ ms=ms %>% mutate(neuro_diagnosis=ifelse((is.na(neuro_diagnosis)==T | neuro_diagn
                                             ifelse(dmt==11,"Other",
                                                    ifelse(dmt%in% c(1,2,26,3,4,5,6,18,14,25,8,9,19,20,15),"Standard","High")))))
 ms=ms%>% select(id_participant,neuro_diagnosis,neuro_type,ms_diagnosis,dmt_efficacy )
-write.csv(ms, "~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/MSRD.csv",row.names = F)
+write.csv(ms, "MSRD.csv",row.names = F)
 
 
 ##########################analysis#######################
-DATA=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/pasc_rawintegrated_03022023.csv")
-demo=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/demographics.csv")
-ms=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/MSRD.csv")
-initial=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/covid_initial.csv")
-vacnew=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/vaccine.csv")
+DATA=read.csv("pasc_rawintegrated_03022023.csv")
+demo=read.csv("demographics.csv")
+ms=read.csv("MSRD.csv")
+initial=read.csv("covid_initial.csv")
+vacnew=read.csv("vaccine.csv")
 ### Table1 ###
 data=merge(demo, ms,by="id_participant" )
 data=merge(data, initial, by="id_participant")
@@ -249,7 +249,7 @@ ggplot(data=venn, aes(x=type,y=n, fill=type))+
         strip.text.x = element_text(size = 10, face = "bold"))
 
 ####### baseline disease characteritics with post-covid condition #######
-score=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/data/score.csv")
+score=read.csv("score.csv")
 dta_all=merge(dta2,score,by=c("id_participant","covid","neuro_type") )
 dta_ms=dta_all %>% filter(neuro_diagnosis=="MS" & sex !="Other")
 dta_ms=dta_ms %>% mutate(ms_diagnosis=ifelse(ms_diagnosis %in% c("CIS","RIS","RRMS"),"RRMS","PMS"))
@@ -291,7 +291,7 @@ tmp=dta_ms %>%filter(is.na(pdds_current)==F) %>%  mutate(pred=predict(m))
 tmp=tmp %>% group_by(any_symp_overall)%>% summarise(m=mean(pred),sd=sd(pred),n=n())
 
 
-pro=readxl::read_xlsx("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/promis.xlsx")
+pro=readxl::read_xlsx("promis.xlsx")
 pro$symptoms2=factor(pro$symptoms2, levels = c("No symptoms","New symptoms only","Worsening symptoms only","New and worsening symptoms"))
 pro_tmp=pro %>% filter(Outcome=="Cognitive function" & neuro_type=="Control")
 p1=ggplot(data=pro_tmp,aes(x=`symptoms2`,y=est,fill=`symptoms2`))+
@@ -401,7 +401,7 @@ p1+p2+p3+plot_spacer()+p4+p5+p6+p7+
   plot_layout(ncol=4)
 
 
-dis<-read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/PDDS_MSRSR.csv")
+dis<-read.csv("PDDS_MSRSR.csv")
 dis$Group=factor(dis$Group,levels = c("Overall","Not fully vaccinated","Fully vaccinated","Pre-Omicron","Omicron"))
 dis=dis %>% filter(outcome=="MSRS-R")
 colnames(dis)[3]="Post-COVID condition"
@@ -427,7 +427,7 @@ p1=dis %>%
 
 
 
-cond<-read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/OR_condition.csv")
+cond<-read.csv("OR_condition.csv")
 cond$Group=factor(cond$Group,levels = c("Overall","Not fully vaccinated","Fully vaccinated","Pre-Omicron","Omicron"))
 colnames(cond)[2]="Post-COVID condition"
 cond$`Post-COVID condition`[1:5]=">=1 PCS"
@@ -525,7 +525,7 @@ newdata=data.frame(score=c(newdata_control,newdata_msrd),
                                rep(dd_all2$covid_stat3[dd_all2$neuro_type=="MSRD"],3)))
 
 
-pro=read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/promis.csv")
+pro=read.csv("promis.csv")
 pro1=pro %>% filter(neuro_type=="Control")
 colnames(pro1)[2]="Post-COVID condition in Controls"
 pro1$`Post-COVID condition in Controls`=factor(pro1$`Post-COVID condition in Controls`,levels = c("No condition (n=255)","New condition only (n=152)","Worsening condition only (n=35)","Both (n=134)"))
