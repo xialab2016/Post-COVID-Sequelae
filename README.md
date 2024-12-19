@@ -4,7 +4,7 @@ Post-COVID sequelae in people with multiple sclerosis and related disorders: a m
 
 # Code
 
-Code for analysis:  \
+Code for analysis: analysis_code.R\
 Code for figures: Figure_code.R
 
 # Data 
