@@ -19,7 +19,7 @@ cities <- data.frame(
 
 map_with_cities <- base_map +
   geom_point(data = cities, aes(x = long, y = lat, label = city), color = "red", size = 3)
-png("~/OneDrive - University of Pittsburgh/XiaLab/PASC/JAMA Neurology/Figures/20231112/Fig1_map.png", units="in", width=7, height=7, res=300)
+png("Fig1_map.png", units="in", width=7, height=7, res=300)
 map_with_cities
 dev.off()
 
@@ -31,7 +31,7 @@ venn=data.frame(group=rep(c("Overall","MSRD","Control"),2),
 venn$group=factor(venn$group,levels = c("Overall", "MSRD","Control"),
                   labels = c("Overall (n=1227)","MSRD (n=613)","Control (n=614)"))
 
-tiff("~/OneDrive - University of Pittsburgh/XiaLab/PASC/JAMA Neurology/Figures/20231112/Fig2A.tiff", units="in", width=12, height=7, res=300)
+tiff("Fig2A.tiff", units="in", width=12, height=7, res=300)
 ggplot(data=venn, aes(x=type,y=n, fill=type))+
   geom_bar(stat="identity")+
   labs(y="N",x="")+
@@ -105,7 +105,7 @@ ggplot(data=ORworse, aes(x=OR,y=Symptom,fill=Domain))+
 dev.off()
 
 #### figure 3 #####
-pro=readxl::read_xlsx("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/promis.xlsx")
+pro=readxl::read_xlsx("promis.xlsx")
 pro$symptoms2=factor(pro$symptoms2, levels = c("No symptoms","≥1 new symptom only","≥1 worsening symptom only","≥1 new and ≥1 worsening symptoms"))
 pro_tmp=pro %>% filter(Outcome=="Cognitive function" & neuro_type=="Control")
 
@@ -264,13 +264,13 @@ ggplot(data=pro_tmp,aes(x=`symptoms2`,y=est,fill=`symptoms2`))+
 dev.off()
 
 ##### sFigure 1####
-dis<-read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/PDDS_MSRSR.csv")
+dis<-read.csv("PDDS_MSRSR.csv")
 dis$Group=factor(dis$Group,levels = c("Overall","Not fully vaccinated","Fully vaccinated","Pre-Omicron","Omicron"))
 dis=dis %>% filter(outcome=="MSRS-R")
 colnames(dis)[3]="Post-COVID condition"
 dis$`Post-COVID condition`[1:5]="≥1 new symptom"
 dis$`Post-COVID condition`[6:10]="≥1 worsening symptom"
-tiff("~/OneDrive - University of Pittsburgh/XiaLab/PASC/JAMA Neurology/Figures/20231112/R_sFigure2.tiff", units="in", width=8, height=8, res=300)
+tiff("R_sFigure2.tiff", units="in", width=8, height=8, res=300)
 dis %>% 
   ggplot(aes(x=Group,y=est,fill=Group))+
   geom_errorbar(aes(ymin=low, ymax=high), width=.2) +
@@ -289,13 +289,13 @@ dis %>%
 dev.off()
 
 ##### sFigure 2####
-cond<-read.csv("~/OneDrive - University of Pittsburgh/XiaLab/PASC/Tables_Figures/OR_condition.csv")
+cond<-read.csv("OR_condition.csv")
 cond$Group=factor(cond$Group,levels = c("Overall","Not fully vaccinated","Fully vaccinated","Pre-Omicron","Omicron"))
 colnames(cond)[2]="Post-COVID condition"
 cond$`Post-COVID condition`[1:5]="≥1 new symptom"
 cond$`Post-COVID condition`[6:10]="≥1 worsening symptom"
 
-tiff("~/OneDrive - University of Pittsburgh/XiaLab/PASC/JAMA Neurology/Figures/20231112/R_sFigure1.tiff", units="in", width=8, height=8, res=300)
+tiff("R_sFigure1.tiff", units="in", width=8, height=8, res=300)
 ggplot(data=cond, aes(x=Group,y=OR,fill=Group))+
   geom_errorbar(aes(ymin=low, ymax=high), width=.2) +
   geom_point(aes(x=Group,y=OR))+
