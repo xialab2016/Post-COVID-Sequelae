@@ -4,7 +4,8 @@ Post-COVID sequelae in people with multiple sclerosis and related disorders: a m
 
 # Code
 
-Code for analysis: analysis_code.R\
+Code for analysis using NIH RECOVER-defined long COVID: 250324 revised code_JAMA.R\
+Code for analysis using NASEM-defined long COVID: 250324 revised code_NEJM.R\
 Code for figures: Figure_code.R
 
 # Data 
